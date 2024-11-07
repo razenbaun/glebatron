@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-4">Добавить нового пользователя</h1>
+
+    <form action="{{ url_for('users.add_user') }}" method="POST">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="phone_number">Телефон</label>
+            <input type="text" name="phone_number" id="phone_number" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="fio">ФИО</label>
+            <input type="text" name="fio" id="fio" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Добавить пользователя</button>
+        <a href="{{ url_for('users.get_users') }}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

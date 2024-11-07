@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Редактировать сделку</h1>
+<form method="POST">
+    <div class="form-group">
+        <label for="car_id">Автомобиль</label>
+        <input type="text" class="form-control" value="{{ deal.car.model }}" disabled>
+    </div>
+
+    <div class="form-group">
+        <label for="rate_id">Тариф</label>
+        <input type="text" class="form-control" value="{{ deal.rate.type }} - {{ deal.rate.amount }} руб." disabled>
+    </div>
+
+    <div class="form-group">
+        <label for="organization_id">Организация</label>
+        <input type="text" class="form-control" value="{{ deal.organization.organization_name }}" disabled>
+    </div>
+
+    <div class="form-group">
+        <label for="user_id">Пользователь</label>
+        <input type="text" class="form-control" value="{{ deal.user.fio }}" disabled>
+    </div>
+
+    {% if not deal.end_time %}
+    <button type="submit" class="btn btn-danger" name="close_deal" value="close">Закрыть сделку</button>
+    {% else %}
+    <div class="alert alert-success">
+        Сделка закрыта: {{ deal.end_time }}
+    </div>
+    {% endif %}
+</form>
+{% endblock %}

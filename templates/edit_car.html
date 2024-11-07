@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-4">Редактировать автомобиль</h1>
+
+    <form action="{{ url_for('cars.edit_car', car_id=car.car_id) }}" method="POST">
+        <div class="form-group">
+            <label for="model">Модель</label>
+            <input type="text" name="model" id="model" class="form-control" value="{{ car.model }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="year">Год выпуска</label>
+            <input type="number" name="year" id="year" class="form-control" value="{{ car.year }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="rate_id">Тариф</label>
+            <select name="rate_id" id="rate_id" class="form-control" required>
+                {% for rate in rates %}
+                <option value="{{ rate.rate_id }}" {% if rate.rate_id== car.rate_id %}selected{% endif %}>{{ rate.amount
+                    }} ({{ rate.type }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="status">Статус</label>
+            <input type="text" name="status" id="status" class="form-control" value="{{ car.status }}" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        <a href="{{ url_for('cars.get_cars') }}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}
