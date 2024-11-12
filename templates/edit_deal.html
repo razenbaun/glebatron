@@ -1,34 +1,36 @@
 {% extends 'base.html' %}
-
+{% block title %}Изменить сделку{% endblock %}
 {% block content %}
-<h1>Редактировать сделку</h1>
+<h1>Изменить сделку</h1>
 <form method="POST">
     <div class="form-group">
         <label for="car_id">Автомобиль</label>
-        <input type="text" class="form-control" value="{{ deal.car.model }}" disabled>
+        <select name="car_id" class="form-control" required>
+            {% for car in cars %}
+            <option value="{{ car.car_id }}" {% if car.car_id== deal.car_id %}selected{% endif %}>{{ car.model }}
+            </option>
+            {% endfor %}
+        </select>
     </div>
-
     <div class="form-group">
         <label for="rate_id">Тариф</label>
-        <input type="text" class="form-control" value="{{ deal.rate.type }} - {{ deal.rate.amount }} руб." disabled>
+        <select name="rate_id" class="form-control" required>
+            {% for rate in rates %}
+            <option value="{{ rate.rate_id }}" {% if rate.rate_id== deal.rate_id %}selected{% endif %}>{{ rate.type }} -
+                {{ rate.amount }} ₽
+            </option>
+            {% endfor %}
+        </select>
     </div>
-
-    <div class="form-group">
-        <label for="organization_id">Организация</label>
-        <input type="text" class="form-control" value="{{ deal.organization.organization_name }}" disabled>
-    </div>
-
     <div class="form-group">
         <label for="user_id">Пользователь</label>
-        <input type="text" class="form-control" value="{{ deal.user.fio }}" disabled>
+        <select name="user_id" class="form-control" required>
+            {% for user in users %}
+            <option value="{{ user.user_id }}" {% if user.user_id== deal.user_id %}selected{% endif %}>{{ user.fio }}
+            </option>
+            {% endfor %}
+        </select>
     </div>
-
-    {% if not deal.end_time %}
-    <button type="submit" class="btn btn-danger" name="close_deal" value="close">Закрыть сделку</button>
-    {% else %}
-    <div class="alert alert-success">
-        Сделка закрыта: {{ deal.end_time }}
-    </div>
-    {% endif %}
+    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
 </form>
 {% endblock %}

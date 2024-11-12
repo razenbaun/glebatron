@@ -1,36 +1,36 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <h1 class="mt-4">Добавить новый автомобиль</h1>
-
-    <form action="{{ url_for('cars.add_car') }}" method="POST">
-        <div class="form-group">
-            <label for="model">Модель</label>
-            <input type="text" name="model" id="model" class="form-control" required>
-        </div>
-
-        <div class="form-group">
-            <label for="year">Год выпуска</label>
-            <input type="number" name="year" id="year" class="form-control" required>
-        </div>
-
-        <div class="form-group">
-            <label for="rate_id">Тариф</label>
-            <select name="rate_id" id="rate_id" class="form-control" required>
-                {% for rate in rates %}
-                <option value="{{ rate.rate_id }}">{{ rate.amount }} ({{ rate.type }})</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="status">Статус</label>
-            <input type="text" name="status" id="status" class="form-control" required>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Добавить автомобиль</button>
-        <a href="{{ url_for('cars.get_cars') }}" class="btn btn-secondary">Отмена</a>
-    </form>
-</div>
+<h1>Добавить новый автомобиль</h1>
+<form action="{{ url_for('cars.add_car') }}" method="post">
+    <div class="form-group">
+        <label for="model">Модель</label>
+        <input type="text" class="form-control" id="model" name="model" required>
+    </div>
+    <div class="form-group">
+        <label for="year">Год</label>
+        <input type="number" class="form-control" id="year" name="year" required>
+    </div>
+    <div class="form-group">
+        <label for="status">Статус</label>
+        <input type="text" class="form-control" id="status" name="status" required>
+    </div>
+    <div class="form-group">
+        <label for="rate_id">Тариф</label>
+        <select class="form-control" id="rate_id" name="rate_id" required>
+            {% for rate in rates %}
+            <option value="{{ rate.rate_id }}">{{ rate.amount }} {{ rate.type }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="organization_id">Организация</label>
+        <select class="form-control" id="organization_id" name="organization_id" required>
+            {% for organization in organizations %}
+            <option value="{{ organization.organization_id }}">{{ organization.organization_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Добавить автомобиль</button>
+</form>
 {% endblock %}

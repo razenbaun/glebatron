@@ -1,44 +1,32 @@
 {% extends 'base.html' %}
-
+{% block title %}Добавить сделку{% endblock %}
 {% block content %}
 <h1>Добавить сделку</h1>
 <form method="POST">
     <div class="form-group">
         <label for="car_id">Автомобиль</label>
-        <select name="car_id" id="car_id" class="form-control" required>
+        <select name="car_id" class="form-control" required>
             {% for car in cars %}
-            <option value="{{ car.car_id }}">{{ car.model }} ({{ car.year }})</option>
+            <option value="{{ car.car_id }}">{{ car.model }}</option>
             {% endfor %}
         </select>
     </div>
-
     <div class="form-group">
         <label for="rate_id">Тариф</label>
-        <select name="rate_id" id="rate_id" class="form-control" required>
+        <select name="rate_id" class="form-control" required>
             {% for rate in rates %}
-            <option value="{{ rate.rate_id }}">{{ rate.type }} - {{ rate.amount }} руб.</option>
+            <option value="{{ rate.rate_id }}">{{ rate.type }} - {{ rate.amount }} ₽</option>
             {% endfor %}
         </select>
     </div>
-
-    <div class="form-group">
-        <label for="organization_id">Организация</label>
-        <select name="organization_id" id="organization_id" class="form-control" required>
-            {% for organization in organizations %}
-            <option value="{{ organization.organization_id }}">{{ organization.organization_name }}</option>
-            {% endfor %}
-        </select>
-    </div>
-
     <div class="form-group">
         <label for="user_id">Пользователь</label>
-        <select name="user_id" id="user_id" class="form-control" required>
+        <select name="user_id" class="form-control" required>
             {% for user in users %}
             <option value="{{ user.user_id }}">{{ user.fio }}</option>
             {% endfor %}
         </select>
     </div>
-
-    <button type="submit" class="btn btn-primary">Создать сделку</button>
+    <button type="submit" class="btn btn-primary">Добавить сделку</button>
 </form>
 {% endblock %}

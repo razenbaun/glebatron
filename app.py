@@ -1,7 +1,7 @@
 from flask import Flask
 from models.model import db
-from routes.organizations_routes import organizations_bp
-from routes.locations_routes import locations_bp
+from flask_migrate import Migrate
+from routes.organizations_routes import organization_bp
 from routes.users_routes import users_bp
 from routes.cars_routes import cars_bp
 from routes.rates_routes import rates_bp
@@ -16,13 +16,13 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)
+    migrate = Migrate(app, db)
 
     with app.app_context():
         db.create_all()
 
     app.register_blueprint(index_bp)
-    app.register_blueprint(locations_bp)
-    app.register_blueprint(organizations_bp)
+    app.register_blueprint(organization_bp)
     app.register_blueprint(users_bp)
     app.register_blueprint(rates_bp)
     app.register_blueprint(cars_bp)
