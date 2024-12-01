@@ -3,8 +3,14 @@
 {% block content %}
 <div class="container">
     <h1 class="mt-4">Список тарифов</h1>
-    <a href="{{ url_for('rates.add_rate') }}" class="btn btn-primary mb-3">Добавить тариф</a>
 
+    <form method="GET" action="{{ url_for('rates.get_rates') }}" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Поиск..." value="{{ search_query }}">
+            <button type="submit" class="btn btn-primary">Найти</button>
+        </div>
+    </form>
+    <a href="{{ url_for('rates.add_rate') }}" class="btn btn-primary mb-3">Добавить тариф</a>
     <table class="table table-striped">
         <thead class="thead-dark">
         <tr>
@@ -15,15 +21,14 @@
         </tr>
         </thead>
         <tbody>
-        {% for rate in rates %}
+        {% for rate in rates.items %}
         <tr>
             <td>{{ rate.rate_id }}</td>
             <td>{{ rate.amount }}</td>
             <td>{{ rate.type }}</td>
             <td>
                 <a href="{{ url_for('rates.edit_rate', rate_id=rate.rate_id) }}" class="btn btn-warning btn-sm">Редактировать</a>
-                <form action="{{ url_for('rates.delete_rate', rate_id=rate.rate_id) }}" method="POST"
-                      style="display:inline;">
+                <form action="{{ url_for('rates.delete_rate', rate_id=rate.rate_id) }}" method="POST" style="display:inline;">
                     <button type="submit" class="btn btn-danger btn-sm"
                             onclick="return confirm('Удалить этот тариф?');">Удалить
                     </button>
@@ -33,5 +38,37 @@
         {% endfor %}
         </tbody>
     </table>
+
+    <nav aria-label="Пагинация">
+        <ul class="pagination">
+            {% if rates.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('rates.get_rates', page=rates.prev_num, q=search_query) }}">Предыдущая</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">Предыдущая</span></li>
+            {% endif %}
+
+            {% for page_num in rates.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if page_num %}
+            {% if page_num == rates.page %}
+            <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="{{ url_for('rates.get_rates', page=page_num, q=search_query) }}">{{ page_num }}</a></li>
+            {% endif %}
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">…</span></li>
+            {% endif %}
+            {% endfor %}
+
+            {% if rates.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('rates.get_rates', page=rates.next_num, q=search_query) }}">Следующая</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">Следующая</span></li>
+            {% endif %}
+        </ul>
+    </nav>
 </div>
 {% endblock %}

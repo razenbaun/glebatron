@@ -1,8 +1,19 @@
 {% extends 'base.html' %}
+
 {% block title %}Сделки{% endblock %}
+
 {% block content %}
 <h1>Сделки</h1>
+
+<form method="GET" action="{{ url_for('deals.get_deals') }}" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Поиск..." value="{{ search_query }}">
+        <button type="submit" class="btn btn-primary">Найти</button>
+    </div>
+</form>
+
 <a href="{{ url_for('deals.add_deal') }}" class="btn btn-primary mb-3">Добавить сделку</a>
+
 <table class="table table-striped">
     <thead>
     <tr>
@@ -16,7 +27,7 @@
     </tr>
     </thead>
     <tbody>
-    {% for deal in deals %}
+    {% for deal in deals.items %}
     <tr>
         <td>{{ deal.deal_id }}</td>
         <td>{{ deal.car.model }}</td>
@@ -33,15 +44,13 @@
         <td>
             <a href="{{ url_for('deals.edit_deal', deal_id=deal.deal_id) }}" class="btn btn-warning btn-sm">Изменить</a>
             {% if not deal.end_time %}
-            <form action="{{ url_for('deals.close_deal', deal_id=deal.deal_id) }}" method="POST"
-                  style="display:inline;">
+            <form action="{{ url_for('deals.close_deal', deal_id=deal.deal_id) }}" method="POST" style="display:inline;">
                 <button type="submit" class="btn btn-secondary btn-sm" onclick="return confirm('Закрыть сделку?');">
                     Закрыть
                 </button>
             </form>
             {% endif %}
-            <form action="{{ url_for('deals.delete_deal', deal_id=deal.deal_id) }}" method="POST"
-                  style="display:inline;">
+            <form action="{{ url_for('deals.delete_deal', deal_id=deal.deal_id) }}" method="POST" style="display:inline;">
                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Удалить сделку?');">
                     Удалить
                 </button>
@@ -51,4 +60,36 @@
     {% endfor %}
     </tbody>
 </table>
+
+<nav aria-label="Пагинация">
+    <ul class="pagination">
+        {% if deals.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('deals.get_deals', page=deals.prev_num, q=search_query) }}">Предыдущая</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Предыдущая</span></li>
+        {% endif %}
+
+        {% for page_num in deals.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+        {% if page_num %}
+        {% if page_num == deals.page %}
+        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+        {% else %}
+        <li class="page-item"><a class="page-link" href="{{ url_for('deals.get_deals', page=page_num, q=search_query) }}">{{ page_num }}</a></li>
+        {% endif %}
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+        {% endif %}
+        {% endfor %}
+
+        {% if deals.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('deals.get_deals', page=deals.next_num, q=search_query) }}">Следующая</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Следующая</span></li>
+        {% endif %}
+    </ul>
+</nav>
 {% endblock %}

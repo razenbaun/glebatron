@@ -1,13 +1,26 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.model import Organization, db
+from sqlalchemy import or_
 
 organization_bp = Blueprint('organizations', __name__)
 
 
 @organization_bp.route('/organizations', methods=['GET'])
 def get_organizations():
-    organizations = Organization.query.all()
-    return render_template('organizations.html', organizations=organizations)
+    search_query = request.args.get('q', '')
+    page = request.args.get('page', 1, type=int)
+    per_page = 5
+
+    organizations = Organization.query.filter(
+        or_(
+            Organization.organization_name.ilike(f'%{search_query}%'),
+            Organization.address.ilike(f'%{search_query}%'),
+            Organization.city.ilike(f'%{search_query}%'),
+            Organization.fio_director.ilike(f'%{search_query}%')
+        )
+    ).paginate(page=page, per_page=per_page)
+
+    return render_template('organizations.html', organizations=organizations, search_query=search_query)
 
 
 @organization_bp.route('/organizations/add', methods=['GET', 'POST'])

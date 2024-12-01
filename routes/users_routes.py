@@ -1,14 +1,27 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.model import User, db
 from datetime import datetime
+from sqlalchemy import or_
 
 users_bp = Blueprint('users', __name__)
 
 
 @users_bp.route('/users', methods=['GET'])
 def get_users():
-    users = User.query.all()
-    return render_template('users.html', users=users)
+    search_query = request.args.get('q', '')
+    page = request.args.get('page', 1, type=int)
+    per_page = 5
+
+    users = User.query.filter(
+        or_(
+            User.fio.ilike(f'%{search_query}%'),
+            User.email.ilike(f'%{search_query}%'),
+            User.phone_number.ilike(f'%{search_query}%'),
+            User.passport_number.ilike(f'%{search_query}%')
+        )
+    ).paginate(page=page, per_page=per_page)
+
+    return render_template('users.html', users=users, search_query=search_query)
 
 
 @users_bp.route('/users/add', methods=['GET', 'POST'])

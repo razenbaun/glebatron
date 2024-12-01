@@ -1,14 +1,26 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from datetime import datetime
 from models.model import db, Deal, Car, Rate, User
+from sqlalchemy import or_
 
 deals_bp = Blueprint('deals', __name__)
 
 
 @deals_bp.route('/deals', methods=['GET'])
 def get_deals():
-    deals = Deal.query.all()
-    return render_template('deals.html', deals=deals)
+    search_query = request.args.get('q', '')
+    page = request.args.get('page', 1, type=int)
+    per_page = 5
+
+    deals = Deal.query.join(Car).join(Rate).join(User).filter(
+        or_(
+            Car.model.ilike(f'%{search_query}%'),
+            User.fio.ilike(f'%{search_query}%'),
+            Rate.type.ilike(f'%{search_query}%')
+        )
+    ).paginate(page=page, per_page=per_page)
+
+    return render_template('deals.html', deals=deals, search_query=search_query)
 
 
 @deals_bp.route('/deals/add', methods=['GET', 'POST'])

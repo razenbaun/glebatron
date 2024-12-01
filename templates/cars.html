@@ -2,7 +2,43 @@
 {% block title %}Машины{% endblock %}
 {% block content %}
 <h1>Список автомобилей</h1>
-<a href="{{ url_for('cars.add_car') }}" class="btn btn-primary">Добавить автомобиль</a>
+
+<form method="get" action="{{ url_for('cars.get_cars') }}" class="mb-3">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <input type="text" name="q" class="form-control" placeholder="Поиск по модели или году" value="{{ search_query }}">
+        </div>
+        <div class="col-md-3">
+            <select name="organization" class="form-select">
+                <option value="" {% if not organization_filter %}selected{% endif %}>Все организации</option>
+                {% for organization in organizations %}
+                <option value="{{ organization.organization_id }}" {% if organization_filter == organization.organization_id %}selected{% endif %}>
+                    {{ organization.organization_name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="rate" class="form-select">
+                <option value="" {% if not rate_filter %}selected{% endif %}>Все тарифы</option>
+                {% for rate in rates %}
+                <option value="{{ rate.rate_id }}" {% if rate_filter == rate.rate_id %}selected{% endif %}>
+                    {{ rate.type }} - {{ rate.amount }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <button class="btn btn-primary" type="submit">Применить</button>
+            <a href="{{ url_for('cars.get_cars') }}" class="btn btn-secondary">Сбросить</a>
+        </div>
+    </div>
+</form>
+
+<a href="{{ url_for('cars.add_car') }}" class="btn btn-primary mt-3">Добавить автомобиль</a>
+
 <table class="table mt-4">
     <thead>
     <tr>
@@ -16,7 +52,7 @@
     </tr>
     </thead>
     <tbody>
-    {% for car in cars %}
+    {% for car in cars.items %}
     <tr>
         <td>{{ car.car_id }}</td>
         <td>{{ car.model }}</td>
@@ -34,4 +70,38 @@
     {% endfor %}
     </tbody>
 </table>
+
+<nav>
+    <ul class="pagination">
+        {% if cars.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('cars.get_cars', page=cars.prev_num, q=search_query, status=status_filter, organization=organization_filter, rate=rate_filter) }}">Назад</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">Назад</span>
+        </li>
+        {% endif %}
+
+        {% for page_num in cars.iter_pages() %}
+        {% if page_num %}
+        <li class="page-item {% if page_num == cars.page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('cars.get_cars', page=page_num, q=search_query, status=status_filter, organization=organization_filter, rate=rate_filter) }}">{{ page_num }}</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">...</span></li>
+        {% endif %}
+        {% endfor %}
+
+        {% if cars.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('cars.get_cars', page=cars.next_num, q=search_query, status=status_filter, organization=organization_filter, rate=rate_filter) }}">Вперед</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">Вперед</span>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
 {% endblock %}

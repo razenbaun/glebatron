@@ -2,7 +2,15 @@
 {% block title %}Организации{% endblock %}
 {% block content %}
 <h1>Организации</h1>
+
+<form method="GET" action="{{ url_for('organizations.get_organizations') }}" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Поиск..." value="{{ search_query }}">
+        <button type="submit" class="btn btn-primary">Найти</button>
+    </div>
+</form>
 <a href="{{ url_for('organizations.add_organization') }}" class="btn btn-primary mb-3">Добавить организацию</a>
+
 <table class="table table-striped">
     <thead>
     <tr>
@@ -15,7 +23,7 @@
     </tr>
     </thead>
     <tbody>
-    {% for organization in organizations %}
+    {% for organization in organizations.items %}
     <tr>
         <td>{{ organization.organization_name }}</td>
         <td>{{ organization.address }}</td>
@@ -36,4 +44,36 @@
     {% endfor %}
     </tbody>
 </table>
+
+<nav aria-label="Пагинация">
+    <ul class="pagination">
+        {% if organizations.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('organizations.get_organizations', page=organizations.prev_num, q=search_query) }}">Предыдущая</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Предыдущая</span></li>
+        {% endif %}
+
+        {% for page_num in organizations.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+        {% if page_num %}
+        {% if page_num == organizations.page %}
+        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+        {% else %}
+        <li class="page-item"><a class="page-link" href="{{ url_for('organizations.get_organizations', page=page_num, q=search_query) }}">{{ page_num }}</a></li>
+        {% endif %}
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+        {% endif %}
+        {% endfor %}
+
+        {% if organizations.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('organizations.get_organizations', page=organizations.next_num, q=search_query) }}">Следующая</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Следующая</span></li>
+        {% endif %}
+    </ul>
+</nav>
 {% endblock %}
